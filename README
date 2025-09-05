@@ -1,0 +1,35 @@
+# Fragments° Boilerplate Project
+
+A companion boilerplate project for [Fragments](https://fragments.supply). This project can be used as a starting point for your own creative coding projects and experiments.
+
+## Tech Stack
+
+Built on the following technology:
+
+- [Vite](https://nextjs.org/)
+- [ThreeJS](https://threejs.org/)
+
+## How to run the project
+
+```
+pnpm i
+pnpm dev
+```
+
+## Quick Start
+
+The quickest way to get started is to add a new sketch to the `src/sketches` directory.
+
+Then import this into your `main.js` file and set the `colorNode` of the `MeshBasicNodeMaterial` to the sketch function.
+
+## Project Structure
+
+```
+src/
+├── tsl/
+│   └── utils/
+│       ├── function/
+│       │   └── screen_aspect_uv.js
+├── index.css
+├── main.js
+```

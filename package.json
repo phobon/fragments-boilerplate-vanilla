@@ -1,0 +1,19 @@
+{
+  "name": "fragments-boilerplate-vanilla",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "vite": "^6"
+  },
+  "packageManager": "pnpm@10.11.0+sha256.a69e9cb077da419d47d18f1dd52e207245b29cac6e076acedbeb8be3b1a67bd7",
+  "dependencies": {
+    "three": "^0.180.0"
+  }
+}
