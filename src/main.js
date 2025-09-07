@@ -11,7 +11,8 @@ import {
   NoToneMapping,
   LinearSRGBColorSpace,
 } from 'three/webgpu'
-import { Fn, uv, sin, time, vec3 } from 'three/tsl'
+import { dawn1 } from '@/sketches/dawn-1'
+import { flare1 } from '@/sketches/flare-1'
 
 // Canvas
 const canvas = document.querySelector('#webgpu-canvas')
@@ -28,9 +29,8 @@ const sketchMaterial = new MeshBasicNodeMaterial({
   depthWrite: false,
 })
 
-// Basic sketch node
-const colorNode = Fn(() => vec3(uv(), sin(time.mul(0.5))))
-sketchMaterial.colorNode = colorNode()
+// Add your sketch here using TSL
+sketchMaterial.colorNode = dawn1()
 
 // Add a fullscreeen sketch plane to the scene
 const sketch = new Mesh(smokeGeometry, sketchMaterial)
