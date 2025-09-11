@@ -18,7 +18,7 @@ import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
 /**
  * A gradient sketch with fractionated coordinates.
  */
-export const flare1 = Fn(() => {
+const flare1 = Fn(() => {
   // Get aspect-corrected UVs for the screen
   const _uv = screenAspectUV(screenSize)
   const uv0 = uv().toVar()
@@ -59,3 +59,5 @@ export const flare1 = Fn(() => {
 
   return finalColor
 })
+
+export default flare1

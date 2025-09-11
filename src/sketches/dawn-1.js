@@ -19,7 +19,7 @@ import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
 /**
  * A gradient sketch tribute to Rik Oostenbroek.
  */
-export const dawn1 = Fn(() => {
+const dawn1 = Fn(() => {
   // Get aspect-corrected UVs for the screen
   const _uv = screenAspectUV(screenSize).toVar()
   const uv0 = screenAspectUV(screenSize).toVar()
@@ -48,3 +48,5 @@ export const dawn1 = Fn(() => {
 
   return finalColor
 })
+
+export default dawn1
