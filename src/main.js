@@ -12,7 +12,7 @@ import {
   LinearSRGBColorSpace,
 } from 'three/webgpu'
 import Router from './router.js'
-import { uniform, vec3 } from 'three/tsl'
+import dawn1 from './sketches/noise/dawn-1.js'
 
 // Canvas
 const canvas = document.querySelector('#webgpu-canvas')
@@ -28,26 +28,35 @@ const sketchMaterial = new MeshBasicNodeMaterial({
   side: DoubleSide,
   depthWrite: false,
 })
+sketchMaterial.colorNode = dawn1()
+
+// Preload all sketches using import.meta.glob
+const sketches = import.meta.glob('./sketches/**/*.js', { eager: true })
 
 // Current sketch
 let currentSketch = null
 
-// Function to dynamically load and switch sketches
-async function switchSketch(sketchName) {
+// Function to switch sketches using preloaded modules
+function switchSketch(sketchName) {
   try {
-    // Dynamic import based on sketch name
-    const sketchModule = await import(`@/sketches/${sketchName}.js`)
+    // Find the sketch module by path
+    const sketchPath = `./sketches/${sketchName}.js`
+    const sketchModule = sketches[sketchPath]
 
-    // Get the sketch function (assuming it's the default export or named export with same name)
-    const sketchFunction = sketchModule[sketchName] || sketchModule.default
-    sketchMaterial.colorNode = sketchFunction()
-    sketchMaterial.needsUpdate = true
+    if (sketchModule) {
+      // Get the sketch function (default export or named export with same name)
+      const sketchFunction = sketchModule[sketchName] || sketchModule.default
 
-    if (sketchFunction) {
-      currentSketch = sketchName
-      console.log(`Switched to sketch: ${sketchName}`)
+      if (sketchFunction) {
+        sketchMaterial.colorNode = sketchFunction()
+        sketchMaterial.needsUpdate = true
+        currentSketch = sketchName
+        console.log(`Switched to sketch: ${sketchName}`)
+      } else {
+        console.warn(`Sketch function not found in module: ${sketchName}`)
+      }
     } else {
-      console.warn(`Sketch function not found in module: ${sketchName}`)
+      console.warn(`Sketch not found: ${sketchName}`)
     }
   } catch (error) {
     console.error(`Failed to load sketch: ${sketchName}`, error)
@@ -61,9 +70,6 @@ scene.add(sketch)
 
 // Initialize app
 async function init() {
-  // Initialize with default sketch
-  // await switchSketch('dawn-1')
-
   // Viewport sizes
   const viewport = {
     width: window.innerWidth,
@@ -116,8 +122,9 @@ async function init() {
         switchSketch(sketchName)
       }
     } else {
-      // Try to load sketch directly by name
-      switchSketch(path.slice(1)) // Remove leading slash
+      // Try to load sketch directly by name (remove leading slash)
+      const sketchName = path.slice(1)
+      switchSketch(sketchName)
     }
   })
 
