@@ -20,7 +20,7 @@ const canvas = document.querySelector('#webgpu-canvas')
 const scene = new Scene()
 
 // Sketch geometry
-const smokeGeometry = new PlaneGeometry(1, 1, 1, 1)
+const sketchGeometry = new PlaneGeometry(1, 1, 1, 1)
 
 // Sketch material
 const sketchMaterial = new MeshBasicNodeMaterial({
@@ -64,7 +64,7 @@ function switchSketch(sketchName) {
 }
 
 // Add a fullscreeen sketch plane to the scene
-const sketch = new Mesh(smokeGeometry, sketchMaterial)
+const sketch = new Mesh(sketchGeometry, sketchMaterial)
 sketch.scale.set(2, 2, 1)
 scene.add(sketch)
 
