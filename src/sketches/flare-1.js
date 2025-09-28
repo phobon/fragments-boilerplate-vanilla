@@ -12,9 +12,9 @@
  */
 
 import { abs, Fn, oneMinus, screenSize, uv, vec3, floor, sin, PI, mul, Loop, vec2 } from 'three/tsl'
-import { grain } from '@/tsl/utils/texture'
 import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
 import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
+import { grainTextureEffect } from '@/tsl/post_processing/grain_texture_effect'
 /**
  * A gradient sketch with fractionated coordinates.
  */
@@ -54,7 +54,7 @@ const flare1 = Fn(() => {
     finalColor.assign(col.mul(r))
   })
   // Add grain for texture
-  const g = grain(uv0).mul(0.1)
+  const g = grainTextureEffect(uv0).mul(0.1)
   finalColor.addAssign(g)
 
   return finalColor

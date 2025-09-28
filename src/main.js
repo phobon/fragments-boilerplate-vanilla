@@ -12,6 +12,7 @@ import {
   LinearSRGBColorSpace,
 } from 'three/webgpu'
 import Router from './router.js'
+import SketchesDropdown from './sketches_dropdown/sketches_dropdown.js'
 import dawn1 from './sketches/noise/dawn-1.js'
 
 // Canvas
@@ -35,6 +36,9 @@ const sketches = import.meta.glob('./sketches/**/*.js', { eager: true })
 
 // Current sketch
 let currentSketch = null
+
+// Sketches dropdown
+let sketchesDropdown = null
 
 // Function to switch sketches using preloaded modules
 function switchSketch(sketchName) {
@@ -115,7 +119,7 @@ async function init() {
   const router = new Router((path) => {
     // Handle different route patterns
     if (path === '/' || path === '') {
-      switchSketch('dawn-1')
+      switchSketch('noise/dawn-1')
     } else if (path.startsWith('/sketches/')) {
       const sketchName = path.split('/sketches/')[1]
       if (sketchName) {
@@ -127,6 +131,14 @@ async function init() {
       switchSketch(sketchName)
     }
   })
+
+  // Make router globally available for navigation
+  window.router = router
+
+  // Initialize sketches dropdown
+  console.log('Initializing sketches dropdown...')
+  sketchesDropdown = new SketchesDropdown()
+  console.log('Sketches dropdown initialized:', sketchesDropdown)
 
   // Start rendering
   frame()

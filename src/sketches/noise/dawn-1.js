@@ -12,9 +12,9 @@
  */
 
 import { Fn, screenSize, vec3, fract, pow, time } from 'three/tsl'
-import { grain } from '@/tsl/utils/texture'
 import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
 import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
+import { grainTextureEffect } from '@/tsl/post_processing/grain_texture_effect'
 
 /**
  * A gradient sketch tribute to Rik Oostenbroek.
@@ -43,7 +43,7 @@ const dawn1 = Fn(() => {
   finalColor.assign(col.add(pow(repeatedPattern, 2.0)))
 
   // Add grain for texture
-  const _grain = grain(_uv).mul(0.2)
+  const _grain = grainTextureEffect(_uv).mul(0.2)
   finalColor.addAssign(_grain)
 
   return finalColor
