@@ -16,7 +16,7 @@ class SketchesDropdown {
 
   async loadSketches() {
     // Use the same glob pattern as the sketches route
-    const sketchesGlob = import.meta.glob('../sketches/**/*.js', {
+    const sketchesGlob = import.meta.glob('@/sketches/**/*.js', {
       eager: true,
     })
 
@@ -24,9 +24,10 @@ class SketchesDropdown {
 
     this.sketches = Object.keys(sketchesGlob).map((filePath) => {
       // Convert file path to URL path
-      // ../sketches/flare-1.js -> flare-1
-      // ../sketches/noise/dawn-1.js -> noise/dawn-1
-      const relativePath = filePath.replace('../sketches/', '').replace('.js', '')
+      // /src/sketches/flare-1.js -> flare-1
+      // /src/sketches/noise/dawn-1.js -> noise/dawn-1
+      console.log('Relative path:', filePath)
+      const relativePath = filePath.replace('/src/sketches/', '').replace('.js', '')
       const url = `/sketches/${relativePath}`
 
       // Extract name from path (last part before extension)
