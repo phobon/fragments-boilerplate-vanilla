@@ -9,6 +9,7 @@ import {
   NoToneMapping,
   LinearSRGBColorSpace,
 } from 'three/webgpu'
+import { vec3 } from 'three/tsl'
 
 class WebGPUSketch {
   constructor(canvas, colorNode, onFrame = null) {
@@ -61,7 +62,7 @@ class WebGPUSketch {
     this._mesh.scale.set(2, 2, 1)
     this._scene.add(this._mesh)
 
-    window.addEventListener('resize', function () {
+    window.addEventListener('resize', () => {
       // Update sizes
       this._viewport.width = window.innerWidth
       this._viewport.height = window.innerHeight
@@ -95,11 +96,19 @@ class WebGPUSketch {
     this._material.needsUpdate = true
   }
 
+  get onFrame() {
+    return this._onFrame
+  }
+
+  set onFrame(onFrame) {
+    this._onFrame = onFrame
+  }
+
   async render() {
     await this._renderer.renderAsync(this._scene, this._camera)
 
     if (this._onFrame) {
-      this._onFrame()
+      this._onFrame(this._colorNode, this._renderer)
     }
 
     const frame = this.render.bind(this)
