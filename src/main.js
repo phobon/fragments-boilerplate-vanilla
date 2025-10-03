@@ -12,7 +12,7 @@ import {
   LinearSRGBColorSpace,
 } from 'three/webgpu'
 import Router from './router.js'
-import SketchesDropdown from './sketches_dropdown/sketches_dropdown.js'
+import SketchesDropdown from './components/sketches_dropdown/sketches_dropdown.js'
 import dawn1 from './sketches/noise/dawn-1.js'
 import WebGPUSketch from './components/sketch/webgpu_sketch.js'
 
