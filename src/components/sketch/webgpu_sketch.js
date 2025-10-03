@@ -116,14 +116,6 @@ class WebGPUSketch {
     const frame = this.render.bind(this)
     window.requestAnimationFrame(frame)
   }
-
-  dispose() {
-    this._renderer.dispose()
-    this._scene.dispose()
-    this._camera.dispose()
-    this._material.dispose()
-    this._geometry.dispose()
-  }
 }
 
 export default WebGPUSketch
