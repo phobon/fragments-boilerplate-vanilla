@@ -4,7 +4,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/sketches/*": ["./src/sketches/*"],
-      "@/tsl/*": ["./src/tsl/*"]
+      "@/tsl/*": ["./src/tsl/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/utils/*": ["./src/utils/*"]
     },
     "target": "ES2022",
     "useDefineForClassFields": true,

@@ -13,40 +13,42 @@ import {
 } from 'three/webgpu'
 import Router from './router.js'
 import SketchesDropdown from './components/sketches_dropdown/sketches_dropdown.js'
-import dawn1 from './sketches/noise/dawn-1.js'
 import WebGPUSketch from './components/sketch/webgpu_sketch.js'
-
-// Canvas
-const canvas = document.querySelector('#webgpu-canvas')
-
-// Sketch
-const webgpuSketch = new WebGPUSketch(canvas, dawn1)
 
 // Preload all sketches using import.meta.glob
 const sketches = import.meta.glob('./sketches/**/*.js', { eager: true })
 
-// Current sketch
 let currentSketch = null
 
 // Sketches dropdown
 let sketchesDropdown = null
 
 // Function to switch sketches using preloaded modules
-function switchSketch(sketchName) {
+async function switchSketch(sketchName) {
   try {
+    // Dispose current sketch if it exists
+    if (currentSketch && currentSketch.dispose) {
+      currentSketch.dispose()
+    }
+
     // Find the sketch module by path
     const sketchPath = `./sketches/${sketchName}.js`
     const sketchModule = sketches[sketchPath]
 
     if (sketchModule) {
-      // Get the sketch function (default export or named export with same name)
-      const sketchFunction = sketchModule[sketchName] || sketchModule.default
+      // Get the sketch (default export only)
+      const sketchExport = sketchModule.default
 
-      if (sketchFunction) {
-        // Update the colorNode for the sketch
-        webgpuSketch.colorNode = sketchFunction
+      if (sketchExport) {
+        if (sketchExport instanceof WebGPUSketch) {
+          currentSketch = sketchExport
+          await currentSketch.init()
+          await currentSketch.render()
+        } else {
+          console.warn(`Sketch export is neither WebGPUSketch nor function: ${sketchName}`)
+          return
+        }
 
-        currentSketch = sketchName
         console.log(`Switched to sketch: ${sketchName}`)
       } else {
         console.warn(`Sketch function not found in module: ${sketchName}`)
@@ -62,19 +64,19 @@ function switchSketch(sketchName) {
 // Initialize app
 async function init() {
   // Initialize router with automatic route handling
-  const router = new Router((path) => {
+  const router = new Router(async (path) => {
     // Handle different route patterns
     if (path === '/' || path === '') {
-      switchSketch('noise/dawn-1')
+      await switchSketch('')
     } else if (path.startsWith('/sketches/')) {
       const sketchName = path.split('/sketches/')[1]
       if (sketchName) {
-        switchSketch(sketchName)
+        await switchSketch(sketchName)
       }
     } else {
       // Try to load sketch directly by name (remove leading slash)
       const sketchName = path.slice(1)
-      switchSketch(sketchName)
+      await switchSketch(sketchName)
     }
   })
 
@@ -85,9 +87,6 @@ async function init() {
   console.log('Initializing sketches dropdown...')
   sketchesDropdown = new SketchesDropdown()
   console.log('Sketches dropdown initialized:', sketchesDropdown)
-
-  // Start rendering
-  webgpuSketch.render()
 }
 
 // Start the app

@@ -15,6 +15,7 @@ import { Fn, screenSize, vec3, fract, pow, time } from 'three/tsl'
 import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
 import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
 import { grainTextureEffect } from '@/tsl/post_processing/grain_texture_effect'
+import WebGPUSketch from '@/components/sketch/webgpu_sketch'
 
 /**
  * A gradient sketch tribute to Rik Oostenbroek.
@@ -49,4 +50,7 @@ const dawn1 = Fn(() => {
   return finalColor
 })
 
-export default dawn1
+const canvas = document.querySelector('#webgpu-canvas')
+const sketch = new WebGPUSketch(canvas, dawn1())
+
+export default sketch

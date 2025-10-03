@@ -9,16 +9,14 @@ import {
   NoToneMapping,
   LinearSRGBColorSpace,
 } from 'three/webgpu'
-import { vec3 } from 'three/tsl'
+import { vec3, Fn } from 'three/tsl'
 
 class WebGPUSketch {
-  constructor(canvas, colorNode, onFrame = null) {
+  constructor(canvas, colorNode = null, onFrame = null) {
     this._canvas = canvas
 
     this._colorNode = colorNode
     this._onFrame = onFrame
-
-    this.init()
   }
 
   async init() {
@@ -33,7 +31,7 @@ class WebGPUSketch {
       side: DoubleSide,
       depthWrite: false,
     })
-    this._material.colorNode = this._colorNode()
+    this._material.colorNode = this._colorNode ? this._colorNode : vec3(0, 0, 0)
 
     // Viewport sizes
     this._viewport = {
@@ -62,48 +60,22 @@ class WebGPUSketch {
     this._mesh.scale.set(2, 2, 1)
     this._scene.add(this._mesh)
 
-    window.addEventListener('resize', () => {
-      // Update sizes
-      this._viewport.width = window.innerWidth
-      this._viewport.height = window.innerHeight
-      this._viewport.pixelRatio = Math.min(window.devicePixelRatio, 2)
-
-      // Update camera
-      this._camera.aspect = this._viewport.width / this._viewport.height
-      this._camera.updateProjectionMatrix()
-
-      // Update renderer
-      this._renderer.setSize(this._viewport.width, this._viewport.height)
-      this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-      console.log('Resized')
-    })
+    window.addEventListener('resize', this.resizeHandler)
   }
 
-  get colorNode() {
-    return this._colorNode
-  }
+  resizeHandler = () => {
+    // Update sizes
+    this._viewport.width = window.innerWidth
+    this._viewport.height = window.innerHeight
+    this._viewport.pixelRatio = Math.min(window.devicePixelRatio, 2)
 
-  set colorNode(colorNode) {
-    this._colorNode = colorNode
+    // Update camera
+    this._camera.aspect = this._viewport.width / this._viewport.height
+    this._camera.updateProjectionMatrix()
 
-    // Update the colorNode for the sketch
-    if (!this._colorNode) {
-      this._material.colorNode = vec3(0, 0, 0)
-      console.warn('No colorNode provided')
-    } else {
-      this._material.colorNode = colorNode()
-    }
-
-    this._material.needsUpdate = true
-  }
-
-  get onFrame() {
-    return this._onFrame
-  }
-
-  set onFrame(onFrame) {
-    this._onFrame = onFrame
+    // Update renderer
+    this._renderer.setSize(this._viewport.width, this._viewport.height)
+    this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   }
 
   async render() {
@@ -114,7 +86,39 @@ class WebGPUSketch {
     }
 
     const frame = this.render.bind(this)
-    window.requestAnimationFrame(frame)
+    this._animationFrameId = window.requestAnimationFrame(frame)
+  }
+
+  dispose() {
+    // Cancel any pending animation frames
+    if (this._animationFrameId) {
+      window.cancelAnimationFrame(this._animationFrameId)
+    }
+
+    window.removeEventListener('resize', this.resizeHandler)
+
+    // Dispose geometry
+    if (this._geometry) {
+      this._geometry.dispose()
+    }
+
+    // Dispose material
+    if (this._material) {
+      this._material.dispose()
+    }
+
+    // Dispose renderer
+    if (this._renderer) {
+      this._renderer.dispose()
+    }
+
+    // Clear references
+    this._scene = null
+    this._geometry = null
+    this._material = null
+    this._camera = null
+    this._renderer = null
+    this._mesh = null
   }
 }
 

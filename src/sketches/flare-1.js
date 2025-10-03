@@ -15,6 +15,8 @@ import { abs, Fn, oneMinus, screenSize, uv, vec3, floor, sin, PI, mul, Loop, vec
 import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
 import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
 import { grainTextureEffect } from '@/tsl/post_processing/grain_texture_effect'
+import WebGPUSketch from '@/components/sketch/webgpu_sketch'
+
 /**
  * A gradient sketch with fractionated coordinates.
  */
@@ -60,4 +62,7 @@ const flare1 = Fn(() => {
   return finalColor
 })
 
-export default flare1
+const canvas = document.querySelector('#webgpu-canvas')
+const sketch = new WebGPUSketch(canvas, flare1())
+
+export default sketch
