@@ -67,7 +67,6 @@ class WebGPUSketch {
     // Update sizes
     this._viewport.width = window.innerWidth
     this._viewport.height = window.innerHeight
-    this._viewport.pixelRatio = Math.min(window.devicePixelRatio, 2)
 
     // Update camera
     this._camera.aspect = this._viewport.width / this._viewport.height
