@@ -36,7 +36,7 @@ class WebGPUSketch {
     this._material.colorNode = this._colorNode()
 
     // Viewport sizes
-    const viewport = {
+    this._viewport = {
       width: window.innerWidth,
       height: window.innerHeight,
     }
@@ -53,7 +53,7 @@ class WebGPUSketch {
       toneMapping: NoToneMapping,
       outputColorSpace: LinearSRGBColorSpace,
     })
-    this._renderer.setSize(viewport.width, viewport.height)
+    this._renderer.setSize(this._viewport.width, this._viewport.height)
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this._renderer.setClearColor('#000000')
 
@@ -75,6 +75,8 @@ class WebGPUSketch {
       // Update renderer
       this._renderer.setSize(this._viewport.width, this._viewport.height)
       this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+      console.log('Resized')
     })
   }
 
