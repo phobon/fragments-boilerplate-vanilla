@@ -17,21 +17,12 @@ class WebGPUSketch {
 
     this._colorNode = colorNode
     this._onFrame = onFrame
+
+    this._meshInitialized = false
   }
 
   async init() {
     this._scene = new Scene()
-
-    // Sketch geometry
-    this._geometry = new PlaneGeometry(1, 1, 1, 1)
-
-    // Sketch material
-    this._material = new MeshBasicNodeMaterial({
-      transparent: true,
-      side: DoubleSide,
-      depthWrite: false,
-    })
-    this._material.colorNode = this._colorNode ? this._colorNode : vec3(0, 0, 0)
 
     // Viewport sizes
     this._viewport = {
@@ -55,18 +46,32 @@ class WebGPUSketch {
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this._renderer.setClearColor('#000000')
 
+    window.addEventListener('resize', this._resizeHandler)
+  }
+
+  _initMesh() {
+    // Sketch geometry
+    this._geometry = new PlaneGeometry(1, 1, 1, 1)
+
+    // Sketch material
+    this._material = new MeshBasicNodeMaterial({
+      transparent: true,
+      side: DoubleSide,
+      depthWrite: false,
+    })
+    this._material.colorNode = this._colorNode ? this._colorNode : vec3(0, 0, 0)
+
     // Add a fullscreeen sketch plane to the scene
     this._mesh = new Mesh(this._geometry, this._material)
     this._mesh.scale.set(2, 2, 1)
     this._scene.add(this._mesh)
-
-    window.addEventListener('resize', this.resizeHandler)
   }
 
-  resizeHandler = () => {
+  _resizeHandler = () => {
     // Update sizes
     this._viewport.width = window.innerWidth
     this._viewport.height = window.innerHeight
+    this._viewport.pixelRatio = Math.min(window.devicePixelRatio, 2)
 
     // Update camera
     this._camera.aspect = this._viewport.width / this._viewport.height
@@ -78,6 +83,11 @@ class WebGPUSketch {
   }
 
   async render() {
+    if (!this._meshInitialized) {
+      this._initMesh()
+      this._meshInitialized = true
+    }
+
     await this._renderer.renderAsync(this._scene, this._camera)
 
     if (this._onFrame) {
@@ -94,7 +104,7 @@ class WebGPUSketch {
       window.cancelAnimationFrame(this._animationFrameId)
     }
 
-    window.removeEventListener('resize', this.resizeHandler)
+    window.removeEventListener('resize', this._resizeHandler)
 
     // Dispose geometry
     if (this._geometry) {
