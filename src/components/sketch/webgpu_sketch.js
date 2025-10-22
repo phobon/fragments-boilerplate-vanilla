@@ -115,11 +115,6 @@ class WebGPUSketch {
       this._material.dispose()
     }
 
-    // Dispose renderer
-    if (this._renderer) {
-      this._renderer.dispose()
-    }
-
     // Clear references
     this._scene = null
     this._geometry = null

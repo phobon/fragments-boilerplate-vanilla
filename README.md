@@ -38,10 +38,24 @@ sketchMaterial.colorNode = dawn1()
 
 ```
 src/
+├── components/
+│   ├── sketch/
+│   │   └── webgpu_sketch.js
+│   └── sketches_dropdown/
+│       ├── index.css
+│       └── sketches_dropdown.js
 ├── sketches/
-│   ├── dawn-1.js
-│   └── flare-1.js
+│   ├── flare-1.js
+│   └── noise/
+│       └── dawn-1.js
 ├── tsl/
+│   ├── effects/
+│   │   ├── canvas_weave_effect.js
+│   │   ├── grain_texture_effect.js
+│   │   ├── led_effect.js
+│   │   ├── pixellation_effect.js
+│   │   ├── speckled_noise_effect.js
+│   │   └── vignette_effect.js
 │   ├── noise/
 │   │   ├── common.js
 │   │   ├── curl_noise_3d.js
@@ -52,8 +66,14 @@ src/
 │   │   ├── simplex_noise_4d.js
 │   │   └── turbulence.js
 │   ├── post_processing/
+│   │   ├── chromatic_aberration_effect.js
+│   │   ├── crt_scanline_effect.js
+│   │   ├── dither_effect.js
 │   │   ├── grain_texture_effect.js
-│   │   └── lcd_effect.js
+│   │   ├── halftone_effect.js
+│   │   ├── led_effect.js
+│   │   ├── pixellation_effect.js
+│   │   └── vignette_effect.js
 │   └── utils/
 │       ├── color/
 │       │   ├── cosine_palette.js
@@ -69,10 +89,12 @@ src/
 │       ├── math/
 │       │   ├── complex.js
 │       │   └── coordinates.js
-│       ├── sdf/
-│       │   ├── operations.js
-│       │   └── shapes.js
-│       └── texture.js
+│       └── sdf/
+│           ├── operations.js
+│           └── shapes.js
+├── utils/
+│   └── math.js
 ├── index.css
-└── main.js
+├── main.js
+└── router.js
 ```
