@@ -65,8 +65,6 @@ export const simplexNoise4d = /*#__PURE__*/ Fn(([v_immutable]) => {
     49.0,
     dot(m0.mul(m0), vec3(dot(p0, x0), dot(p1, x1), dot(p2, x2))).add(dot(m1.mul(m1), vec2(dot(p3, x3), dot(p4, x4)))),
   )
-
-  // @ts-ignore
 }).setLayout({
   name: 'simplexNoise4d',
   type: 'float',

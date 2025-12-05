@@ -20,7 +20,6 @@ export const mod289_1 = /*#__PURE__*/ Fn(([x_immutable]) => {
   inputs: [{ name: 'x', type: 'vec4' }],
 })
 
-// @ts-ignore
 export const mod289 = /*#__PURE__*/ overloadingFn([mod289_0, mod289_1])
 
 export const fade = /*#__PURE__*/ Fn(([t_immutable]) => {
@@ -45,7 +44,6 @@ export const permute_0 = /*#__PURE__*/ Fn(([x_immutable]) => {
   const x = vec4(x_immutable).toVar()
 
   return mod(x.mul(34.0).add(1.0).mul(x), 289.0)
-  // @ts-ignore
 }).setLayout({
   name: 'permute_0',
   type: 'vec4',
@@ -61,8 +59,6 @@ export const permute_1 = /*#__PURE__*/ Fn(([x_immutable]) => {
   const x = float(x_immutable).toVar()
 
   return floor(mod(x.mul(34.0).add(1.0).mul(x), 289.0))
-
-  // @ts-ignore
 }).setLayout({
   name: 'permute_1',
   type: 'float',
@@ -74,7 +70,6 @@ export const permute_1 = /*#__PURE__*/ Fn(([x_immutable]) => {
  * @param {vec4|float} x - Input value.
  * @returns {vec4|float} Permuted value.
  */
-// @ts-ignore
 export const permute = /*#__PURE__*/ overloadingFn([permute_0, permute_1])
 
 /**
@@ -116,7 +111,6 @@ export const taylorInvSqrt_1 = /*#__PURE__*/ Fn(([r_immutable]) => {
  * @param {vec4|float} r - Input value.
  * @returns {vec4|float} Result value.
  */
-// @ts-ignore
 export const taylorInvSqrt = /*#__PURE__*/ overloadingFn([taylorInvSqrt_0, taylorInvSqrt_1])
 
 /**
@@ -141,8 +135,6 @@ export const grad4 = /*#__PURE__*/ Fn(([j_immutable, ip_immutable]) => {
   p.xyz.assign(p.xyz.add(s.xyz.mul(2.0).sub(1.0).mul(s.www)))
 
   return p
-
-  // @ts-ignore
 }).setLayout({
   name: 'grad4',
   type: 'vec4',

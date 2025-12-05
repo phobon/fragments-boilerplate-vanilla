@@ -1,4 +1,4 @@
-import { vec2, Fn, fract, sin, dot, uv } from 'three/tsl'
+import { vec2, Fn, fract, sin, dot, vec4, uv } from 'three/tsl'
 
 /**
  * Creates a grain texture effect for post-processing.

@@ -48,7 +48,6 @@ export const curlNoise4d = Fn(([inputA]) => {
   const bGrabNoise = vec3(bXAverage, bYAverage, bZAverage).normalize()
 
   return cross(aGrabNoise, bGrabNoise).normalize()
-  // @ts-ignore
 }).setLayout({
   name: 'curlNoise4d',
   type: 'vec3',

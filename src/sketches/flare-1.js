@@ -14,7 +14,7 @@
 import { abs, Fn, oneMinus, screenSize, uv, vec3, floor, sin, PI, mul, Loop, vec2 } from 'three/tsl'
 import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
 import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
-import { grainTextureEffect } from '@/tsl/effects/grain_texture_effect'
+import { grainTexturePattern } from '@/tsl/patterns/grain_texture_pattern'
 import WebGPUSketch from '@/components/sketch/webgpu_sketch'
 
 /**
@@ -56,7 +56,7 @@ const flare1 = Fn(() => {
     finalColor.assign(col.mul(r))
   })
   // Add grain for texture
-  const g = grainTextureEffect(uv0).mul(0.1)
+  const g = grainTexturePattern(uv0).mul(0.1)
   finalColor.addAssign(g)
 
   return finalColor
