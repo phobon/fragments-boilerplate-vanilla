@@ -11,46 +11,46 @@
  * - ShareAlike: Distribute derivatives under the same license
  */
 
-import { Fn, screenSize, vec3, fract, pow, time } from 'three/tsl'
-import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
-import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
-import WebGPUSketch from '@/components/sketch/webgpu_sketch'
-import { grainTexturePattern } from '@/tsl/patterns/grain_texture_pattern'
+import { Fn, screenSize, vec3, fract, pow, time } from "three/tsl";
+import WebGPUSketch from "@/components/sketch/webgpu_sketch";
+import { grainTexturePattern } from "@/tsl/patterns/grain_texture_pattern";
+import { cosinePalette } from "@/tsl/utils/color/cosine_palette";
+import { screenAspectUV } from "@/tsl/utils/function/screen_aspect_uv";
 
 /**
  * A gradient sketch tribute to Rik Oostenbroek.
  */
 const dawn1 = Fn(() => {
-  // Get aspect-corrected UVs for the screen
-  const _uv = screenAspectUV(screenSize).toVar()
-  const uv0 = screenAspectUV(screenSize).toVar()
+	// Get aspect-corrected UVs for the screen
+	const _uv = screenAspectUV(screenSize).toVar();
+	const uv0 = screenAspectUV(screenSize).toVar();
 
-  // Color accumulator
-  const finalColor = vec3(0.0).toVar()
+	// Color accumulator
+	const finalColor = vec3(0.0).toVar();
 
-  // Palette setup
-  const a = vec3(0.5, 0.5, 0.5)
-  const b = vec3(0.5, 0.5, 0.5)
-  const c = vec3(1.0, 1.0, 0.5)
-  const d = vec3(0.8, 0.9, 0.3)
+	// Palette setup
+	const a = vec3(0.5, 0.5, 0.5);
+	const b = vec3(0.5, 0.5, 0.5);
+	const c = vec3(1.0, 1.0, 0.5);
+	const d = vec3(0.8, 0.9, 0.3);
 
-  // Animated vertical gradient using cosine palette
-  const col = cosinePalette(uv0.y.add(0.5).add(time.mul(0.01)), a, b, c, d)
+	// Animated vertical gradient using cosine palette
+	const col = cosinePalette(uv0.y.add(0.5).add(time.mul(0.01)), a, b, c, d);
 
-  // Repeated sawtooth pattern in Y, softened
-  const repeatedPattern = fract(_uv.y.mul(24)).mul(0.3)
+	// Repeated sawtooth pattern in Y, softened
+	const repeatedPattern = fract(_uv.y.mul(24)).mul(0.3);
 
-  // Add pattern to color, boost with pow for punch
-  finalColor.assign(col.add(pow(repeatedPattern, 2.0)))
+	// Add pattern to color, boost with pow for punch
+	finalColor.assign(col.add(pow(repeatedPattern, 2.0)));
 
-  // Add grain for texture
-  const _grain = grainTexturePattern(_uv).mul(0.2)
-  finalColor.addAssign(_grain)
+	// Add grain for texture
+	const _grain = grainTexturePattern(_uv).mul(0.2);
+	finalColor.addAssign(_grain);
 
-  return finalColor
-})
+	return finalColor;
+});
 
-const canvas = document.querySelector('#webgpu-canvas')
-const sketch = new WebGPUSketch(canvas, dawn1())
+const canvas = document.querySelector("#webgpu-canvas");
+const sketch = new WebGPUSketch(canvas, dawn1());
 
-export default sketch
+export default sketch;

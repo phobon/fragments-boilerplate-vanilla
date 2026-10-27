@@ -11,58 +11,71 @@
  * - ShareAlike: Distribute derivatives under the same license
  */
 
-import { abs, Fn, oneMinus, screenSize, uv, vec3, floor, sin, PI, mul, Loop, vec2 } from 'three/tsl'
-import { cosinePalette } from '@/tsl/utils/color/cosine_palette'
-import { screenAspectUV } from '@/tsl/utils/function/screen_aspect_uv'
-import { grainTexturePattern } from '@/tsl/patterns/grain_texture_pattern'
-import WebGPUSketch from '@/components/sketch/webgpu_sketch'
+import {
+	abs,
+	Fn,
+	floor,
+	Loop,
+	mul,
+	oneMinus,
+	PI,
+	screenSize,
+	sin,
+	uv,
+	vec2,
+	vec3,
+} from "three/tsl";
+import WebGPUSketch from "@/components/sketch/webgpu_sketch";
+import { grainTexturePattern } from "@/tsl/patterns/grain_texture_pattern";
+import { cosinePalette } from "@/tsl/utils/color/cosine_palette";
+import { screenAspectUV } from "@/tsl/utils/function/screen_aspect_uv";
 
 /**
  * A gradient sketch with fractionated coordinates.
  */
 const flare1 = Fn(() => {
-  // Get aspect-corrected UVs for the screen
-  const _uv = screenAspectUV(screenSize)
-  const uv0 = uv().toVar()
+	// Get aspect-corrected UVs for the screen
+	const _uv = screenAspectUV(screenSize);
+	const uv0 = uv().toVar();
 
-  // Color accumulator
-  const finalColor = vec3(0).toVar()
+	// Color accumulator
+	const finalColor = vec3(0).toVar();
 
-  // Palette setup
-  const a = vec3(0.5, 0.5, 0.5)
-  const b = vec3(0.5, 0.5, 0.5)
-  const c = vec3(2.0, 1.0, 0.0)
-  const d = vec3(0.5, 0.2, 0.25)
+	// Palette setup
+	const a = vec3(0.5, 0.5, 0.5);
+	const b = vec3(0.5, 0.5, 0.5);
+	const c = vec3(2.0, 1.0, 0.0);
+	const d = vec3(0.5, 0.2, 0.25);
 
-  // Y-repeated pattern for banding
-  const repetitions = 12
-  const uvR = floor(_uv.y.mul(repetitions))
+	// Y-repeated pattern for banding
+	const repetitions = 12;
+	const uvR = floor(_uv.y.mul(repetitions));
 
-  // Sine wave for vertical offset
-  const s = sin(uv0.y.mul(PI))
+	// Sine wave for vertical offset
+	const s = sin(uv0.y.mul(PI));
 
-  // Loop over bands
-  // @ts-ignore
-  Loop({ start: 0, end: repetitions }, ({ i: _i }) => {
-    const f = mul(uvR.mul(_i), 0.005)
-    const offsetUv = vec2(_uv.x, _uv.y.add(f).add(mul(s, 0.05)))
+	// Loop over bands
+	// @ts-ignore
+	Loop({ start: 0, end: repetitions }, ({ i: _i }) => {
+		const f = mul(uvR.mul(_i), 0.005);
+		const offsetUv = vec2(_uv.x, _uv.y.add(f).add(mul(s, 0.05)));
 
-    // Compound radial gradient
-    const r = oneMinus(abs(offsetUv.x.mul(1.5))).add(abs(offsetUv.y.mul(1.5)))
+		// Compound radial gradient
+		const r = oneMinus(abs(offsetUv.x.mul(1.5))).add(abs(offsetUv.y.mul(1.5)));
 
-    // Palette-based color
-    const col = cosinePalette(uv0.y.mul(0.25), a, b, c, d)
+		// Palette-based color
+		const col = cosinePalette(uv0.y.mul(0.25), a, b, c, d);
 
-    finalColor.assign(col.mul(r))
-  })
-  // Add grain for texture
-  const g = grainTexturePattern(uv0).mul(0.1)
-  finalColor.addAssign(g)
+		finalColor.assign(col.mul(r));
+	});
+	// Add grain for texture
+	const g = grainTexturePattern(uv0).mul(0.1);
+	finalColor.addAssign(g);
 
-  return finalColor
-})
+	return finalColor;
+});
 
-const canvas = document.querySelector('#webgpu-canvas')
-const sketch = new WebGPUSketch(canvas, flare1())
+const canvas = document.querySelector("#webgpu-canvas");
+const sketch = new WebGPUSketch(canvas, flare1(), null);
 
-export default sketch
+export default sketch;
