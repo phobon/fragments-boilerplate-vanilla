@@ -1,11 +1,4 @@
-import { Fn, vec2, float, sin, cos, dot } from 'three/tsl'
-
-type WaveDistortionOptions = {
-  frequency?: ReturnType<typeof float>
-  amplitude?: ReturnType<typeof float>
-  angle?: ReturnType<typeof float>
-  timeOffset?: ReturnType<typeof float>
-}
+import { cos, dot, Fn, float, sin, vec2 } from 'three/tsl'
 
 /**
  * Applies a wave distortion to UV coordinates.
@@ -18,12 +11,7 @@ type WaveDistortionOptions = {
  * @returns {vec2} Distorted UV coordinates
  */
 export const waveDistortion = Fn(([_uv, options = {}]) => {
-  const {
-    frequency = float(10.0),
-    amplitude = float(0.1),
-    angle = float(0),
-    timeOffset = float(0),
-  } = options as WaveDistortionOptions
+  const { frequency = float(10.0), amplitude = float(0.1), angle = float(0), timeOffset = float(0) } = options
   const uv = _uv.toVar()
 
   // Create direction vector from angle

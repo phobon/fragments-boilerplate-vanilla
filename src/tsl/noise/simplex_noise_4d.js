@@ -1,4 +1,4 @@
-import { vec4, mod, Fn, float, floor, mul, sub, vec3, dot, vec2, step, clamp, max } from 'three/tsl'
+import { clamp, dot, Fn, float, floor, max, mod, mul, step, sub, vec2, vec3, vec4 } from 'three/tsl'
 import { grad4, permute, taylorInvSqrt } from './common'
 
 /**

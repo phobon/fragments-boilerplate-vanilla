@@ -1,15 +1,4 @@
-import {
-	Fn,
-	float,
-	length,
-	min,
-	mul,
-	normalize,
-	oneMinus,
-	pow,
-	smoothstep,
-	vec2,
-} from "three/tsl";
+import { Fn, float, length, min, normalize, oneMinus, pow, smoothstep, vec2 } from 'three/tsl'
 
 /**
  * Applies a bulge or pinch distortion to UV coordinates.
@@ -22,27 +11,20 @@ import {
  * @returns {vec2} Distorted UV coordinates
  */
 export const bulgeDistortion = Fn(([_uv, options = {}]) => {
-	const {
-		strength = float(0.5),
-		radius = float(0.5),
-		power = float(1.0),
-		center = vec2(0),
-	} = options;
-	const uv = _uv.toVar();
-	const offset = uv.sub(center).toVar();
-	const dist = length(offset).toVar();
+  const { strength = float(0.5), radius = float(0.5), power = float(1.0), center = vec2(0) } = options
+  const uv = _uv.toVar()
+  const offset = uv.sub(center).toVar()
+  const dist = length(offset).toVar()
 
-	// Normalized distance within radius (0-1), smoothed to create a cleaner effect
-	const normalizedDist = smoothstep(0, 1, min(dist.div(radius), 1)).toVar();
+  // Normalized distance within radius (0-1), smoothed to create a cleaner effect
+  const normalizedDist = smoothstep(0, 1, min(dist.div(radius), 1)).toVar()
 
-	// Use power curve to create stronger effect in the center
-	const falloff = pow(oneMinus(normalizedDist), power).mul(strength);
+  // Use power curve to create stronger effect in the center
+  const falloff = pow(oneMinus(normalizedDist), power).mul(strength)
 
-	// Apply radial displacement
-	const direction = normalize(offset);
-	const displacedUV = center.add(
-		direction.mul(dist.mul(falloff.add(float(1.0)))),
-	);
+  // Apply radial displacement
+  const direction = normalize(offset)
+  const displacedUV = center.add(direction.mul(dist.mul(falloff.add(float(1.0)))))
 
-	return displacedUV;
-});
+  return displacedUV
+})

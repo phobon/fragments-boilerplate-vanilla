@@ -1,5 +1,5 @@
 import { Fn, float, uv } from 'three/tsl'
-import { waveDistortion } from '@/tsl/distortion/wave_distortion'
+import { waveDistortion } from '../distortion/wave_distortion'
 
 /**
  * Creates a wave distortion effect for post-processing.
@@ -25,3 +25,14 @@ export const waveDistortionEffect = Fn((props) => {
   })
   return input.sample(distortedUV)
 })
+
+/**
+ * WP2 (docs/shader-perf-implementation-plan.md): re-export of the UV
+ * transform above, under the stable name `ppRemapUVRegistry` expects.
+ * Calling convention: `waveDistortionUV(uvNode, args)`, matching this
+ * module's existing `waveDistortion(_uv, options)` helper convention (see
+ * mirror_distortion_effect.ts for the rationale, applied uniformly across
+ * all nine remap effects). No behaviour change: this is the exact same
+ * `waveDistortion` `waveDistortionEffect` calls above.
+ */
+export { waveDistortion as waveDistortionUV }

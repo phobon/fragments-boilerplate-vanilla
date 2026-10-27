@@ -1,5 +1,5 @@
-import { Fn, smoothstep, pow, uv } from 'three/tsl'
-import { sdSphere } from '@/tsl/utils/sdf/shapes'
+import { Fn, pow, smoothstep, uv } from 'three/tsl'
+import { sdSphere } from '../utils/sdf/shapes'
 
 /**
  * Creates a vignette effect for post-processing.

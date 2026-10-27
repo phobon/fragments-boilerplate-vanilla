@@ -1,5 +1,5 @@
-import { Fn, vec2, float, uv } from 'three/tsl'
-import { bulgeDistortion } from '@/tsl/distortion/bulge_distortion'
+import { Fn, float, uv, vec2 } from 'three/tsl'
+import { bulgeDistortion } from '../distortion/bulge_distortion'
 
 /**
  * Creates a bulge distortion effect for post-processing.
@@ -25,3 +25,14 @@ export const bulgeEffect = Fn((props) => {
 
   return input.sample(distortedUV)
 })
+
+/**
+ * WP2 (docs/shader-perf-implementation-plan.md): re-export of the UV
+ * transform above, under the stable name `ppRemapUVRegistry` expects.
+ * Calling convention: `bulgeDistortionUV(uvNode, args)`, matching this
+ * module's existing `bulgeDistortion(_uv, options)` helper convention (see
+ * mirror_distortion_effect.ts for the rationale, applied uniformly across
+ * all nine remap effects). No behaviour change: this is the exact same
+ * `bulgeDistortion` `bulgeEffect` calls above.
+ */
+export { bulgeDistortion as bulgeDistortionUV }

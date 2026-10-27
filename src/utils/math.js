@@ -1,4 +1,4 @@
-export const clamp = (min, input, max) => {
+export const clamp = (input, min, max) => {
   return Math.max(min, Math.min(input, max))
 }
 

@@ -1,4 +1,4 @@
-import { Fn, sin, Loop, float, mat2, vec2 } from 'three/tsl'
+import { Fn, float, Loop, mat2, sin, vec2 } from 'three/tsl'
 
 /**
  * Turbulence noise function originally created by @XorDev

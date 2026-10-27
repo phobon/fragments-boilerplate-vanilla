@@ -1,4 +1,4 @@
-import { Fn, min, max, abs, float } from 'three/tsl'
+import { abs, Fn, float, max, min } from 'three/tsl'
 
 /**
  * Returns the smooth minimum of two floats.

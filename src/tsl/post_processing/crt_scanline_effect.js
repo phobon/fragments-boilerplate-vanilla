@@ -1,4 +1,4 @@
-import { Fn, vec2, float, sin, pow, mix, vec4, uv } from 'three/tsl'
+import { Fn, float, mix, pow, sin, uv, vec2, vec4 } from 'three/tsl'
 
 /**
  * Creates a CRT monitor scanline effect with optional barrel distortion for post-processing.

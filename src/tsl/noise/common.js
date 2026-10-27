@@ -1,4 +1,4 @@
-import { floor, Fn, vec3, sub, vec4, mul, overloadingFn, fract, abs, dot, lessThan, float, mod } from 'three/tsl'
+import { abs, dot, Fn, float, floor, fract, lessThan, mod, mul, overloadingFn, sub, vec3, vec4 } from 'three/tsl'
 
 export const mod289_0 = /*#__PURE__*/ Fn(([x_immutable]) => {
   const x = vec3(x_immutable).toVar()
@@ -70,6 +70,7 @@ export const permute_1 = /*#__PURE__*/ Fn(([x_immutable]) => {
  * @param {vec4|float} x - Input value.
  * @returns {vec4|float} Permuted value.
  */
+
 export const permute = /*#__PURE__*/ overloadingFn([permute_0, permute_1])
 
 /**
@@ -81,8 +82,6 @@ export const taylorInvSqrt_0 = /*#__PURE__*/ Fn(([r_immutable]) => {
   const r = vec4(r_immutable).toVar()
 
   return sub(1.79284291400159, mul(0.85373472095314, r))
-
-  // @ts-ignore
 }).setLayout({
   name: 'taylorInvSqrt_0',
   type: 'vec4',
@@ -98,8 +97,6 @@ export const taylorInvSqrt_1 = /*#__PURE__*/ Fn(([r_immutable]) => {
   const r = float(r_immutable).toVar()
 
   return sub(1.79284291400159, mul(0.85373472095314, r))
-
-  // @ts-ignore
 }).setLayout({
   name: 'taylorInvSqrt_1',
   type: 'float',
@@ -111,6 +108,7 @@ export const taylorInvSqrt_1 = /*#__PURE__*/ Fn(([r_immutable]) => {
  * @param {vec4|float} r - Input value.
  * @returns {vec4|float} Result value.
  */
+
 export const taylorInvSqrt = /*#__PURE__*/ overloadingFn([taylorInvSqrt_0, taylorInvSqrt_1])
 
 /**

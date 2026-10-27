@@ -1,7 +1,7 @@
 // Base on https://al-ro.github.io/projects/embers/
 // Added a 4th dimension
 
-import { EPSILON, cross, Fn, vec3, vec4 } from 'three/tsl'
+import { cross, EPSILON, Fn, vec3, vec4 } from 'three/tsl'
 import { simplexNoise4d } from './simplex_noise_4d'
 
 /**

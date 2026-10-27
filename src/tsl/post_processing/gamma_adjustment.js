@@ -1,0 +1,19 @@
+import { Fn, uv, vec4 } from 'three/tsl'
+import { gamma } from '../utils/color/adjustments/gamma'
+
+/**
+ * Gamma image adjustment (color^(1/gamma)).
+ * Post-processing wrapper around the color-in/color-out `gamma` adjustment
+ * (utils/color/adjustments) so it can run as a PP chain layer.
+ * @param {Object} props - Adjustment parameters
+ * @param {vec4} props.input - The input color texture from the scene
+ * @param {number} [props.amount=1] - Gamma; 1 = unchanged, >1 lifts midtones, <1 crushes them.
+ * @returns {vec4} The adjusted color (alpha passed through)
+ */
+export const gammaAdjustment = Fn((props) => {
+  const { input, inputUV = uv, amount = 1 } = props || {}
+
+  const _uv = inputUV().toVar()
+  const color = input.sample(_uv)
+  return vec4(gamma(color.rgb, amount), color.a)
+})

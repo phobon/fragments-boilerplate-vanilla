@@ -7,6 +7,12 @@ import Router from "./router.js";
 // Preload all sketches using import.meta.glob
 const sketches = import.meta.glob("./sketches/**/*.js", { eager: true });
 
+function getDefaultSketchName() {
+	const first = Object.keys(sketches).sort()[0];
+	if (!first) return null;
+	return first.replace("./sketches/", "").replace(/\.js$/, "");
+}
+
 let currentSketch = null;
 
 // Sketches dropdown
@@ -58,7 +64,11 @@ async function init() {
 	const router = new Router(async (path) => {
 		// Handle different route patterns
 		if (path === "/" || path === "") {
-			await switchSketch("");
+			const defaultSketch = getDefaultSketchName();
+			if (defaultSketch) {
+				window.location.hash = `/sketches/${defaultSketch}`;
+			}
+			return;
 		} else if (path.startsWith("/sketches/")) {
 			const sketchName = path.split("/sketches/")[1];
 			if (sketchName) {

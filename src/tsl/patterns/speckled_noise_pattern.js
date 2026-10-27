@@ -1,11 +1,6 @@
-import { Fn, vec2, vec3, step } from 'three/tsl'
-import { simplexNoise3d } from '@/tsl/noise/simplex_noise_3d'
-import { fbm } from '@/tsl/noise/fbm'
-
-type SpeckedNoisePatternOptions = {
-  density?: number
-  warpAmount?: ReturnType<typeof vec2>
-}
+import { Fn, step, vec2, vec3 } from 'three/tsl'
+import { fbm } from '../noise/fbm'
+import { simplexNoise3d } from '../noise/simplex_noise_3d'
 
 /**
  * Returns a speckle texture pattern value for a given UV coordinate.
@@ -15,7 +10,7 @@ type SpeckedNoisePatternOptions = {
  * @param {vec2} [options.warpAmount=vec2(80, 120)] - Noise frequencies used for UV warping.
  */
 export const speckedNoisePattern = Fn(([_uv, options = {}]) => {
-  const { density = 0.75, warpAmount = vec2(80, 120) } = options as SpeckedNoisePatternOptions
+  const { density = 0.75, warpAmount = vec2(80, 120) } = options
   // Warp the UVs for organic distribution
   const warpX = fbm(vec3(_uv.mul(3.0), 0.0))
   const warpY = fbm(vec3(_uv.mul(3.0).add(100.0), 0.0))
