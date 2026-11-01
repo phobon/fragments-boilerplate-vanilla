@@ -12,6 +12,8 @@
   pointer-events: auto;
   font-size: 1.5rem;
   z-index: 30;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .sketches-toggle__button {
@@ -25,6 +27,11 @@
 
 .sketches-toggle__button:hover {
   background: #272a2d;
+}
+
+.sketches-toggle__button:disabled {
+  cursor: default;
+  color: #f87171;
 }
 
 .sketches-dropdown {

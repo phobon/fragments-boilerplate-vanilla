@@ -11,6 +11,7 @@ import {
 	OrthographicCamera,
 	PlaneGeometry,
 	Scene,
+	Vector2,
 	WebGPURenderer,
 } from "three/webgpu";
 
@@ -97,6 +98,9 @@ class WebGPUSketch {
 	}
 
 	_resizeHandler = () => {
+		// Hold the fixed capture size while a recording is in progress
+		if (this._recording) return;
+
 		// Update sizes
 		this._viewport.width = window.innerWidth;
 		this._viewport.height = window.innerHeight;
@@ -136,6 +140,112 @@ class WebGPUSketch {
 
 		const frame = this.render.bind(this);
 		this._animationFrameId = window.requestAnimationFrame(frame);
+	}
+
+	/**
+	 * Renders a single frame at a fixed resolution and returns it as a PNG blob.
+	 * The drawing buffer is resized without touching CSS, then restored.
+	 */
+	async capture(width = 1200, height = 900) {
+		if (!this._renderer || !this._meshInitialized) {
+			return null;
+		}
+
+		const prevSize = this._renderer.getSize(new Vector2());
+		const prevPixelRatio = this._renderer.getPixelRatio();
+
+		const output = document.createElement("canvas");
+		output.width = width;
+		output.height = height;
+		const ctx = output.getContext("2d");
+
+		try {
+			this._renderer.setPixelRatio(1);
+			this._renderer.setSize(width, height, false);
+			this._renderer.render(this._scene, this._camera);
+
+			// Copy synchronously, before the WebGPU canvas texture is presented and discarded
+			ctx.drawImage(this._renderer.domElement, 0, 0, width, height);
+		} finally {
+			this._renderer.setPixelRatio(prevPixelRatio);
+			this._renderer.setSize(prevSize.x, prevSize.y, false);
+			this._renderer.render(this._scene, this._camera);
+		}
+
+		return new Promise((resolve) => output.toBlob(resolve, "image/png"));
+	}
+
+	/**
+	 * Records the live canvas at a fixed resolution for a fixed duration and returns the video blob.
+	 * Prefers MP4 (H.264) where supported, falling back to WebM.
+	 * While recording, the canvas is letterboxed on screen so the preview matches the output framing.
+	 */
+	async record({
+		durationMs = 5000,
+		width = 960,
+		height = 720,
+		fps = 60,
+		bitrate = 6_000_000,
+		onProgress = null,
+	} = {}) {
+		if (!this._renderer || !this._meshInitialized || this._recording) {
+			return null;
+		}
+
+		const renderer = this._renderer;
+		const canvas = renderer.domElement;
+		const prevObjectFit = canvas.style.objectFit;
+
+		this._recording = true;
+
+		try {
+			renderer.setPixelRatio(1);
+			renderer.setSize(width, height, false);
+			canvas.style.objectFit = "contain";
+
+			const mimeType =
+				[
+					"video/mp4;codecs=avc1.640028",
+					"video/mp4",
+					"video/webm;codecs=vp9",
+					"video/webm;codecs=vp8",
+					"video/webm",
+				].find((type) => MediaRecorder.isTypeSupported(type)) ?? "";
+
+			const stream = canvas.captureStream(fps);
+			const recorder = new MediaRecorder(stream, {
+				mimeType: mimeType || undefined,
+				videoBitsPerSecond: bitrate,
+			});
+			const chunks = [];
+			recorder.ondataavailable = (e) => {
+				if (e.data.size > 0) chunks.push(e.data);
+			};
+			const stopped = new Promise((resolve) => {
+				recorder.onstop = resolve;
+			});
+
+			recorder.start();
+			const start = performance.now();
+			onProgress?.(durationMs);
+			const interval = setInterval(() => {
+				onProgress?.(Math.max(0, durationMs - (performance.now() - start)));
+			}, 250);
+
+			await new Promise((resolve) => setTimeout(resolve, durationMs));
+			clearInterval(interval);
+			recorder.stop();
+			await stopped;
+			stream.getTracks().forEach((track) => track.stop());
+
+			const type = recorder.mimeType || mimeType || "video/webm";
+			return new Blob(chunks, { type });
+		} finally {
+			canvas.style.objectFit = prevObjectFit;
+			this._recording = false;
+			// Restore to the current window size (picks up any resizes during recording)
+			if (this._renderer) this._resizeHandler();
+		}
 	}
 
 	async dispose() {

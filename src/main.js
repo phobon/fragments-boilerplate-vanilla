@@ -58,6 +58,41 @@ async function switchSketch(sketchName) {
 	}
 }
 
+function getCaptureName() {
+	return (
+		window.location.hash
+			.replace(/^#\/?(sketches\/)?/, "")
+			.replace(/\//g, "-") || "snapshot"
+	);
+}
+
+function downloadBlob(blob, extension) {
+	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `${getCaptureName()}-${timestamp}.${extension}`;
+	a.click();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// Capture a 1200x900 (4:3) PNG of the current sketch and download it
+async function captureSnapshot() {
+	if (!currentSketch?.capture || currentSketch._recording) return;
+
+	const blob = await currentSketch.capture(1200, 900);
+	if (blob) downloadBlob(blob, "png");
+}
+
+// Record the current sketch (defaults: 5s at 960x720, 4:3) and download it.
+// Override with e.g. { durationMs: 10000, width: 1200, height: 900, bitrate: 10_000_000 }
+async function recordVideo(onProgress, options = {}) {
+	if (!currentSketch?.record) return;
+
+	const blob = await currentSketch.record({ ...options, onProgress });
+	if (blob) downloadBlob(blob, blob.type.includes("mp4") ? "mp4" : "webm");
+}
+
 // Initialize app
 async function init() {
 	// Initialize router with automatic route handling
@@ -86,7 +121,10 @@ async function init() {
 
 	// Initialize sketches dropdown
 	console.log("Initializing sketches dropdown...");
-	sketchesDropdown = new SketchesDropdown();
+	sketchesDropdown = new SketchesDropdown({
+		onCapture: captureSnapshot,
+		onRecord: recordVideo,
+	});
 	console.log("Sketches dropdown initialized:", sketchesDropdown);
 }
 

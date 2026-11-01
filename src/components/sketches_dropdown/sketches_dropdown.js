@@ -1,7 +1,9 @@
 import './index.css'
 
 class SketchesDropdown {
-  constructor() {
+  constructor({ onCapture, onRecord } = {}) {
+    this.onCapture = onCapture
+    this.onRecord = onRecord
     this.isVisible = false
     this.sketches = []
     this.dropdownRef = null
@@ -58,6 +60,29 @@ class SketchesDropdown {
     button.textContent = 'Sketches'
     button.addEventListener('click', () => this.toggleSketches())
 
+    // Create the capture button
+    const captureButton = document.createElement('button')
+    captureButton.className = 'sketches-toggle__button'
+    captureButton.textContent = 'Capture snapshot'
+    captureButton.addEventListener('click', () => this.onCapture?.())
+
+    // Create the record button
+    const recordButton = document.createElement('button')
+    recordButton.className = 'sketches-toggle__button'
+    recordButton.textContent = 'Record video'
+    recordButton.addEventListener('click', async () => {
+      if (recordButton.disabled) return
+      recordButton.disabled = true
+      try {
+        await this.onRecord?.((remainingMs) => {
+          recordButton.textContent = `Recording… ${Math.ceil(remainingMs / 1000)}s`
+        })
+      } finally {
+        recordButton.disabled = false
+        recordButton.textContent = 'Record video'
+      }
+    })
+
     // Create the dropdown
     const dropdown = document.createElement('div')
     dropdown.className = 'sketches-dropdown'
@@ -107,6 +132,8 @@ class SketchesDropdown {
     content.appendChild(list)
     dropdown.appendChild(content)
     toggle.appendChild(button)
+    toggle.appendChild(captureButton)
+    toggle.appendChild(recordButton)
     toggle.appendChild(dropdown)
     overlay.appendChild(toggle)
 
