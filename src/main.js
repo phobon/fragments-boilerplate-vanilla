@@ -1,7 +1,7 @@
 import "./index.css";
 
 import WebGPUSketch from "./components/sketch/webgpu_sketch.js";
-import SketchesDropdown from "./components/sketches_dropdown/sketches_dropdown.js";
+import Toolbar from "./components/toolbar/toolbar.js";
 import Router from "./router.js";
 
 // Preload all sketches using import.meta.glob
@@ -14,9 +14,6 @@ function getDefaultSketchName() {
 }
 
 let currentSketch = null;
-
-// Sketches dropdown
-let sketchesDropdown = null;
 
 // Function to switch sketches using preloaded modules
 async function switchSketch(sketchName) {
@@ -76,17 +73,23 @@ function downloadBlob(blob, extension) {
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Capture a 1200x900 (4:3) PNG of the current sketch and download it
-async function captureSnapshot() {
-	if (!currentSketch?.capture || currentSketch._recording) return;
+// Capture settings (4:3). Change these to override the defaults.
+const SNAPSHOT = { width: 1200, height: 900 };
+// Also accepts fps and bitrate, e.g. { durationMs: 10000, width: 1200, height: 900, bitrate: 10_000_000 }
+const VIDEO = { durationMs: 5000, width: 960, height: 720 };
 
-	const blob = await currentSketch.capture(1200, 900);
-	if (blob) downloadBlob(blob, "png");
+// Capture a PNG of the current sketch and download it
+async function captureSnapshot() {
+	if (!currentSketch?.capture || currentSketch._recording) return false;
+
+	const blob = await currentSketch.capture(SNAPSHOT.width, SNAPSHOT.height);
+	if (!blob) return false;
+	downloadBlob(blob, "png");
+	return true;
 }
 
-// Record the current sketch (defaults: 5s at 960x720, 4:3) and download it.
-// Override with e.g. { durationMs: 10000, width: 1200, height: 900, bitrate: 10_000_000 }
-async function recordVideo(onProgress, options = {}) {
+// Record the current sketch and download it
+async function recordVideo(onProgress, options = VIDEO) {
 	if (!currentSketch?.record) return;
 
 	const blob = await currentSketch.record({ ...options, onProgress });
@@ -119,13 +122,14 @@ async function init() {
 	// Make router globally available for navigation
 	window.router = router;
 
-	// Initialize sketches dropdown
-	console.log("Initializing sketches dropdown...");
-	sketchesDropdown = new SketchesDropdown({
-		onCapture: captureSnapshot,
+	// Initialize toolbar (sketches menu + capture)
+	new Toolbar({
+		onNavigate: (url) => router.navigate(url),
+		onSnapshot: captureSnapshot,
 		onRecord: recordVideo,
+		snapshot: SNAPSHOT,
+		video: VIDEO,
 	});
-	console.log("Sketches dropdown initialized:", sketchesDropdown);
 }
 
 // Start the app
