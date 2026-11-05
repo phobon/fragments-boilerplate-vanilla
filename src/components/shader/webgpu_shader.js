@@ -14,12 +14,20 @@ import {
 	Vector2,
 	WebGPURenderer,
 } from "three/webgpu";
+import PostProcessing from "./post_processing.js";
 
 addMethodChaining("toStatsGL", statsGL);
 
-class WebGPUSketch {
+class WebGPUShader {
+	/**
+	 * @param {HTMLCanvasElement} canvas
+	 * @param {Object} [colorNode] - TSL color node for the sketch plane
+	 * @param {Function} [onFrame] - Called after each frame with (colorNode, renderer)
+	 * @param {boolean} [debug=false] - Show stats-gl
+	 */
 	constructor(canvas, colorNode = null, onFrame = null, debug = false) {
 		this._canvas = canvas;
+		this._postProcessingConfig = null;
 
 		this._colorNode = colorNode;
 		this._onFrame = onFrame;
@@ -60,9 +68,10 @@ class WebGPUSketch {
 		this._renderer = new WebGPURenderer({
 			canvas: this._canvas,
 			antialias: true,
-			toneMapping: NoToneMapping,
-			outputColorSpace: LinearSRGBColorSpace,
 		});
+		// WebGPURenderer ignores these as constructor options, so set them explicitly
+		this._renderer.outputColorSpace = LinearSRGBColorSpace;
+		this._renderer.toneMapping = NoToneMapping;
 		// this._renderer.inspector = new Inspector()
 		this._renderer.setSize(this._viewport.width, this._viewport.height);
 		this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -95,6 +104,36 @@ class WebGPUSketch {
 		this._mesh = new Mesh(this._geometry, this._material);
 		this._mesh.scale.set(2, 2, 1);
 		this._scene.add(this._mesh);
+
+		if (this._postProcessingConfig?.layers?.length) {
+			this._postProcessing = new PostProcessing(
+				this._renderer,
+				this._scene,
+				this._camera,
+				this._postProcessingConfig.layers,
+			);
+		}
+	}
+
+	/**
+	 * Sets the post-processing chain. Takes effect on the next `init()` / first render.
+	 * @param {{ layers: Array<{ effect: Function, args?: Object, wrap?: 'none' | 'repeat' | 'mirror' }> } | null} config
+	 */
+	setPostProcessing(config) {
+		this._postProcessingConfig = config;
+	}
+
+	/** Post-processing chain, if any. Use `sketch.postProcessing.setArgs(index, args)` to tweak layers live. */
+	get postProcessing() {
+		return this._postProcessing ?? null;
+	}
+
+	_renderFrame() {
+		if (this._postProcessing) {
+			this._postProcessing.render();
+		} else {
+			this._renderer.render(this._scene, this._camera);
+		}
 	}
 
 	_resizeHandler = () => {
@@ -128,7 +167,7 @@ class WebGPUSketch {
 			this._meshInitialized = true;
 		}
 
-		await this._renderer.render(this._scene, this._camera);
+		await this._renderFrame();
 
 		if (this._stats) {
 			this._stats.update();
@@ -162,14 +201,14 @@ class WebGPUSketch {
 		try {
 			this._renderer.setPixelRatio(1);
 			this._renderer.setSize(width, height, false);
-			this._renderer.render(this._scene, this._camera);
+			this._renderFrame();
 
 			// Copy synchronously, before the WebGPU canvas texture is presented and discarded
 			ctx.drawImage(this._renderer.domElement, 0, 0, width, height);
 		} finally {
 			this._renderer.setPixelRatio(prevPixelRatio);
 			this._renderer.setSize(prevSize.x, prevSize.y, false);
-			this._renderer.render(this._scene, this._camera);
+			this._renderFrame();
 		}
 
 		return new Promise((resolve) => output.toBlob(resolve, "image/png"));
@@ -268,6 +307,11 @@ class WebGPUSketch {
 			this._material.dispose();
 		}
 
+		if (this._postProcessing) {
+			this._postProcessing.dispose();
+			this._postProcessing = null;
+		}
+
 		if (this._renderer) {
 			await this._renderer.dispose();
 		}
@@ -282,4 +326,4 @@ class WebGPUSketch {
 	}
 }
 
-export default WebGPUSketch;
+export default WebGPUShader;

@@ -39,8 +39,9 @@ sketchMaterial.colorNode = dawn1()
 ```
 src/
 ├── components/
-│   ├── sketch/
-│   │   └── webgpu_sketch.js
+│   ├── shader/
+│   │   ├── post_processing.js
+│   │   └── webgpu_shader.js
 │   └── sketches_dropdown/
 │       ├── index.css
 │       └── sketches_dropdown.js

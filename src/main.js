@@ -1,6 +1,6 @@
 import "./index.css";
 
-import WebGPUSketch from "./components/sketch/webgpu_sketch.js";
+import WebGPUShader from "./components/shader/webgpu_shader.js";
 import Toolbar from "./components/toolbar/toolbar.js";
 import Router from "./router.js";
 
@@ -32,14 +32,14 @@ async function switchSketch(sketchName) {
 			const sketchExport = sketchModule.default;
 
 			if (sketchExport) {
-				if (sketchExport instanceof WebGPUSketch) {
+				if (sketchExport instanceof WebGPUShader) {
 					currentSketch = sketchExport;
+					// Optional `export const postProcessing = { layers: [...] }` in the sketch file
+					currentSketch.setPostProcessing(sketchModule.postProcessing ?? null);
 					await currentSketch.init();
 					await currentSketch.render();
 				} else {
-					console.warn(
-						`Sketch export is neither WebGPUSketch nor function: ${sketchName}`,
-					);
+					console.warn(`Sketch export is not a WebGPUShader: ${sketchName}`);
 					return;
 				}
 

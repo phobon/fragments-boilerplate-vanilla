@@ -11,8 +11,8 @@
  * - ShareAlike: Distribute derivatives under the same license
  */
 
-import { Fn, screenSize, vec3, fract, pow, time } from "three/tsl";
-import WebGPUSketch from "@/components/sketch/webgpu_sketch";
+import { Fn, fract, pow, screenSize, time, vec3 } from "three/tsl";
+import WebGPUShader from "@/components/shader/webgpu_shader";
 import { grainTexturePattern } from "@/tsl/patterns/grain_texture_pattern";
 import { cosinePalette } from "@/tsl/utils/color/cosine_palette";
 import { screenAspectUV } from "@/tsl/utils/function/screen_aspect_uv";
@@ -51,6 +51,6 @@ const dawn1 = Fn(() => {
 });
 
 const canvas = document.querySelector("#webgpu-canvas");
-const sketch = new WebGPUSketch(canvas, dawn1());
+const sketch = new WebGPUShader(canvas, dawn1());
 
 export default sketch;

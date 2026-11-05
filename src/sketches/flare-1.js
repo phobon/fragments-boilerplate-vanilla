@@ -25,8 +25,12 @@ import {
 	vec2,
 	vec3,
 } from "three/tsl";
-import WebGPUSketch from "@/components/sketch/webgpu_sketch";
+import WebGPUShader from "@/components/shader/webgpu_shader";
 import { grainTexturePattern } from "@/tsl/patterns/grain_texture_pattern";
+import { contrastAdjustment } from "@/tsl/post_processing/contrast_adjustment";
+import { hueRotateAdjustment } from "@/tsl/post_processing/hue_rotate_adjustment";
+import { pixellationEffect } from "@/tsl/post_processing/pixellation_effect";
+import { saturationAdjustment } from "@/tsl/post_processing/saturation_adjustment";
 import { cosinePalette } from "@/tsl/utils/color/cosine_palette";
 import { screenAspectUV } from "@/tsl/utils/function/screen_aspect_uv";
 
@@ -75,7 +79,19 @@ const flare1 = Fn(() => {
 	return finalColor;
 });
 
+/**
+ * Optional post-processing chain, picked up by `main.js`.
+ */
+export const postProcessing = {
+	layers: [
+		{ effect: contrastAdjustment, args: { amount: 1.2 } },
+		{ effect: saturationAdjustment, args: { amount: 1.4 } },
+		{ effect: hueRotateAdjustment, args: { angle: 0.1 } },
+		{ effect: pixellationEffect, args: { size: 10 } },
+	],
+};
+
 const canvas = document.querySelector("#webgpu-canvas");
-const sketch = new WebGPUSketch(canvas, flare1(), null);
+const sketch = new WebGPUShader(canvas, flare1(), null);
 
 export default sketch;
