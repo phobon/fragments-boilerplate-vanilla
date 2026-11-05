@@ -63,12 +63,31 @@ function getCaptureName() {
 	);
 }
 
-function downloadBlob(blob, extension) {
+function saveBlobToDisk(blob, fileName) {
+	return fetch(`/__capture?name=${encodeURIComponent(fileName)}`, {
+		method: "POST",
+		body: blob,
+	})
+		.then((res) => res.ok)
+		.catch(() => false);
+}
+
+async function downloadBlob(blob, extension) {
 	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const fileName = `${getCaptureName()}-${timestamp}.${extension}`;
+
+	// In dev, `?capture=disk` writes the file to ./captures via the Vite plugin rather than downloading it
+	const toDisk =
+		import.meta.env.DEV &&
+		new URLSearchParams(window.location.search).get("capture") === "disk";
+	if (toDisk && (await saveBlobToDisk(blob, fileName))) {
+		return;
+	}
+
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement("a");
 	a.href = url;
-	a.download = `${getCaptureName()}-${timestamp}.${extension}`;
+	a.download = fileName;
 	a.click();
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -84,7 +103,7 @@ async function captureSnapshot() {
 
 	const blob = await currentSketch.capture(SNAPSHOT.width, SNAPSHOT.height);
 	if (!blob) return false;
-	downloadBlob(blob, "png");
+	await downloadBlob(blob, "png");
 	return true;
 }
 
@@ -93,7 +112,8 @@ async function recordVideo(onProgress, options = VIDEO) {
 	if (!currentSketch?.record) return;
 
 	const blob = await currentSketch.record({ ...options, onProgress });
-	if (blob) downloadBlob(blob, blob.type.includes("mp4") ? "mp4" : "webm");
+	if (blob)
+		await downloadBlob(blob, blob.type.includes("mp4") ? "mp4" : "webm");
 }
 
 // Initialize app
